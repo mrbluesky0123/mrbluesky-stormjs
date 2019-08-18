@@ -9,14 +9,40 @@ import {
 	DefaultPortModel,
 	LinkModel
 } from 'storm-react-diagrams';
-
+import axios from 'axios';
 import './srd.css';
 
 class DemoOne extends React.Component {
+	
+	state = {
+        data: null, // 배치 전체 리스트 호출 응답값
+	};
+	
+
+	constructor(props) {
+        super(props);
+        this.fetchBatchList();
+	}
+	
+	fetchBatchList = async () => {
+		console.log("q123123123123123");
+		await axios.get('http://127.0.0.1:8080/graph/BTPBATCH001').then((response) => {
+			console.log("qqqqqq : " + (response.data)['batchNodes'][0]['batchId']);
+			this.setState({
+				...this.state,
+				data: response,
+			})
+		})
+	}
 
 	componentWillMount() {
 
-		this.jsonData = {"uid":"107129","trueorflase":false,"nickname":"Kevin","age":"14","gender":"M","nationality":"japan","recommendations":[{"exp":"A","items":[]}],"likedPlaces":[],"reviews":[]};
+		
+		
+		
+		// console.log("ssss: " + data['batchNodes'][0]['batchId']);
+		
+		this.jsonData = {"uid":"107129","trueorflase":false,"nickname":"Kevin","age":"14","gender":"M","nationality":"korea","recommendations":[{"exp":"A","items":[]}],"likedPlaces":[],"reviews":[]};
 		this.str = this.jsonData.age;
 		console.log(this.jsonData.nickname);
 		this.engine = new DiagramEngine();
@@ -31,6 +57,7 @@ class DemoOne extends React.Component {
 
 			const node1 = new DefaultNodeModel('Node ' + (i+1), 'rgb(204,0,0)');
 			const port1 = node1.addPort(new DefaultPortModel(false, 'out-1', 'out'));
+			const port1_5 = node1.addPort(new DefaultPortModel(false, 'out-2', 'out'));
 			const port2 = node1.addPort(new DefaultPortModel(true, 'in-1', 'in'));
 			node1.x = positionX;
 			node1.y = positionY;
@@ -54,6 +81,10 @@ class DemoOne extends React.Component {
 			for(var j = 0; j < 2; j++){
 				console.log("Aaaaaa");
 				const link = new LinkModel();
+				var ports = node.getPorts();
+				for(var k = 0; k < ports.length; k++){
+
+				}
 				var port = node.getPort('out-1');
 				var portaa2 = nextNode.getPort('in-1');
 				link.setSourcePort(port);
@@ -92,11 +123,12 @@ class DemoOne extends React.Component {
 		this.engine.setDiagramModel(model);
 	}
 	render() {
+		// console.log("aaaasssssaaa : " + this.state.response.data);
 		console.log('aaaaa')
 		return (
 			
 			<div>
-				<h1>{this.str}</h1>
+				<h1>{this.state.response}</h1>
 				<DiagramWidget diagramEngine={this.engine} />
 			</div>
 		);
